@@ -131,13 +131,16 @@ async function consultarApi(msg)
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${msg}`);
         const data = await response.json();
 
+        const respostaEspecie = await fetch(data.species.url);
+        const especie = await respostaEspecie.json();
+
         carregarFoto(msg);
         atualizarNumero(data.id);
-        exibirDados(data);
+        exibirDados(data, especie);
     }
     catch(erro)
     {
-        console.log(erro.msg)
+        console.log(erro);
     }
 }
 
@@ -175,13 +178,12 @@ async function carregarFoto(img)
         console.log(erro.msg)
     }
 } 
-
-function exibirDados(data)
+function exibirDados(data, especie)
 {
-    infoScreen.textContent = '';
+        infoScreen.textContent = '';
     const nome = document.createElement('p');
     nome.textContent = capitalizar(data.name);
-    nome.style.fontSize = '1.1rem';
+    nome.style.fontSize = '1.5rem';
     nome.style.fontWeight = 'bold';
     const tipo = document.createElement('p');
     tipo.textContent = 'Tipo: ' + capitalizar(data.types[0].type.name);
@@ -198,13 +200,13 @@ function exibirDados(data)
         unidadePeso = 'Kg'
     }
     const regiao = document.createElement('p');
-    regiao.textContent = 'Região:'
-
+    regiao.textContent = 'Região: ' + descobrirRegiao(especie)
 
     pesoAltura.textContent = 'Peso: ' + (data.weight / 10) + 'kg';
     pesoAltura.textContent += ' | Altura: ' + (data.height / 10) + 'm';
-    infoScreen.append(nome, tipo, pesoAltura)
+    infoScreen.append(nome, tipo, pesoAltura, regiao)
 }
+
 
 function capitalizar(str)
 {
@@ -212,7 +214,28 @@ function capitalizar(str)
     return strCapitalizada;
 }
 
-function shiny()
+function descobrirRegiao(especie)
 {
+    const geracao = especie.generation.name;
 
+        if (geracao === 'generation-i') { return 'Kanto'; }
+    else
+        if (geracao === 'generation-ii') { return 'Johto'; }
+    else 
+        if (geracao === 'generation-iii') { return 'Hoenn'; }
+    else 
+        if (geracao === 'generation-iv') { return 'Sinnoh'; }
+    else 
+        if (geracao === 'generation-v') { return 'Unova'; }
+    else 
+        if (geracao === 'generation-vi') { return 'Kalos'; }
+    else 
+        if (geracao === 'generation-vii') { return 'Alola'; }
+    else 
+        if (geracao === 'generation-viii') { return 'Galar'; }
+    else 
+        if (geracao === 'generation-ix') { return 'Paldea'; }
+    else { return 'Desconhecida'; }
 }
+
+
